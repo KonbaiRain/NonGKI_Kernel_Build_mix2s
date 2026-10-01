@@ -198,8 +198,19 @@ jobs:
           # Set SUSFS
           git clone $SUSFS_SOURCE -b $SUSFS_BRANCH susfs4ksu --depth=1
           git clone https://github.com/JackA1ltman/NonGKI_Kernel_Patches.git -b mi_kernel NonGKI_Kernel_Patches --depth=1
-          cp susfs4ksu/kernel_patches/fs/* fs/
-          cp susfs4ksu/kernel_patches/include/linux/* include/linux/
+
+          # NOTE: susfs4ksu's kernel-4.9 branch is susfs v1.5.5, which is NOT compatible
+          # with ReSukiSU's v2.x inline hooks. If the kernel tree already integrates susfs
+          # (e.g. the v2.3.0 backport shipped in the kernel repo), do NOT overwrite its
+          # fs/susfs.c and headers, otherwise every v2 API call becomes an implicit
+          # declaration and the build fails.
+          if [ -f fs/susfs.c ] && [ -f include/linux/susfs.h ] && [ -f include/linux/susfs_def.h ]; then
+            echo "[+] device_kernel already integrates susfs, skipping susfs4ksu source copy:"
+            grep -m1 '^#define SUSFS_VERSION' include/linux/susfs.h || true
+          else
+            cp susfs4ksu/kernel_patches/fs/* fs/
+            cp susfs4ksu/kernel_patches/include/linux/* include/linux/
+          fi
       
       - name: Set up NoMount
         run: |
@@ -274,6 +285,14 @@ jobs:
         if: env.SUSFS_ENABLE == 'true'
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
+
+          # Never patch a kernel that already carries its own susfs integration:
+          # susfs4ksu's kernel-4.9 branch (v1.5.5) would clash with the v2.x backport.
+          if [ -f fs/susfs.c ] && [ -f include/linux/susfs.h ]; then
+            echo "[+] device_kernel already integrates susfs, skipping 50_add_susfs_in_kernel patch."
+            exit 0
+          fi
+
           cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch ./
 
           patch -p1 < 50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch || true
@@ -295,6 +314,14 @@ jobs:
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_FIXED == 'true'
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
+
+          # These "fixed" patches belong to the susfs4ksu v1.5.5 patch flow; skip them
+          # when the kernel already ships its own (v2.x) susfs integration.
+          if [ -f fs/susfs.c ] && [ -f include/linux/susfs.h ]; then
+            echo "[+] device_kernel already integrates susfs, skipping fixed patches."
+            exit 0
+          fi
+
           cp NonGKI_Kernel_Patches/mix2s_evox_a15/cmdline_fixed.patch ./
           cp NonGKI_Kernel_Patches/mix2s_evox_a15/task_mmu_fixed.patch ./
           cp NonGKI_Kernel_Patches/mix2s_evox_a15/fdinfo_fixed.patch ./
