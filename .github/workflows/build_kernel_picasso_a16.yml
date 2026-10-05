@@ -112,6 +112,9 @@ jobs:
             echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+            echo 'CONFIG_LITTLE_CPU_MASK="0-5"' >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+            echo 'CONFIG_BIG_CPU_MASK="6"' >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+            echo 'CONFIG_PRIME_CPU_MASK="7"' >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           fi
 
       - name: Set Anykernel3 and Others
