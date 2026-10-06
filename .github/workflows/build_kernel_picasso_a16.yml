@@ -154,7 +154,7 @@ jobs:
           cp susfs4ksu/kernel_patches/fs/* fs/
           cp susfs4ksu/kernel_patches/include/linux/* include/linux/
                sed -i 's/regalloc-enable-advisor=release/regalloc-enable-advisor=default/g; s/enable-ml-inliner=release/enable-ml-inliner=default/g' Makefile
-               grep -rl 'lsse' Makefile arch/arm64/Makefile 2>/dev/null | xargs -r sed -i 's/lsse/lse/g'
+               grep -rl 'lsse' . 2>/dev/null | xargs -r sed -i 's/lsse/lse/g'
 
       - name: Patch Kernel for no-kprobe
         run: |
