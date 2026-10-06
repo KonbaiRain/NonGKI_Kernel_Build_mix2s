@@ -261,6 +261,7 @@ jobs:
         run: |
           yes "" | make O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig || true
           cd $GITHUB_WORKSPACE/device_kernel/
+                    make mrproper || true
           yes "" | make ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig || true
           make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}  ${{ env.DEFCONFIG_NAME }}
           yes "" | make -j2 CC="clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}
