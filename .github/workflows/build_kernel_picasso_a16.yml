@@ -121,9 +121,6 @@ jobs:
             echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-            echo 'CONFIG_LITTLE_CPU_MASK=0x3f' >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-            echo 'CONFIG_BIG_CPU_MASK=0x40' >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-            echo 'CONFIG_PRIME_CPU_MASK=0x80' >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             make ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
           fi
 
@@ -261,6 +258,7 @@ jobs:
         run: |
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
+          yes "" | make ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig || true
           make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}  ${{ env.DEFCONFIG_NAME }}
           make -j2 CC="clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}
 
