@@ -86,11 +86,10 @@ jobs:
       - name: Set Compile Environment
         run: |
           cd $GITHUB_WORKSPACE
-          mkdir clang-custom
-          cd clang-custom
-          wget https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman -O antman
-          chmod +x antman
-          bash antman -S
+          git clone --depth=1 -b lineage-20.0 \
+            https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git clang-custom
+          ls $GITHUB_WORKSPACE/clang-custom/bin | head -20
+          echo "$GITHUB_WORKSPACE/clang-custom/bin" >> $GITHUB_PATH
 
       - name: Get Kernel Source
         run: |
