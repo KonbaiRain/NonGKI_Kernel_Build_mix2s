@@ -127,7 +127,9 @@ jobs:
       - name: Set Anykernel3 and Others
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
-          sed -i '/prompt "Bitmask of available/d' arch/arm64/Kconfig
+          for f in $(grep -rl 'LITTLE_CPU_MASK' --include='Kconfig*' . 2>/dev/null); do
+            sed -i '/config LITTLE_CPU_MASK/,/^$/d; /config BIG_CPU_MASK/,/^$/d; /config PRIME_CPU_MASK/,/^$/d' "$f"
+          done
 
           # Variable
           SUSFS_SOURCE=https://gitlab.com/simonpunk/susfs4ksu.git
