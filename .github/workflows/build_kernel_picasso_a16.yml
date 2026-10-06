@@ -152,7 +152,7 @@ jobs:
           git clone https://github.com/JackA1ltman/NonGKI_Kernel_Patches.git -b mi_kernel NonGKI_Kernel_Patches --depth=1
           cp susfs4ksu/kernel_patches/fs/* fs/
           cp susfs4ksu/kernel_patches/include/linux/* include/linux/
-               sed -i 's/regalloc-enable-advisor=release/regalloc-enable-advisor=default/g; s/enable-ml-inliner=release/enable-ml-inliner=default/g' Makefile
+               sed -i '/regalloc-enable-advisor/d; /enable-ml-inliner/d' Makefile
                grep -rl 'lsse' . 2>/dev/null | xargs -r sed -i 's/lsse/lse/g'
 
       - name: Patch Kernel for no-kprobe
