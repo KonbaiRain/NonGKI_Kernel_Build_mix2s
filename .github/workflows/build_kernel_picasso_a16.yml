@@ -60,6 +60,14 @@ jobs:
           remove-haskell: "true"
           remove-codeql: "true"
 
+      - name: Setup swap
+        run: |
+          sudo fallocate -l 6G /mnt/swapfile || sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=6144
+          sudo chmod 600 /mnt/swapfile
+          sudo mkswap /mnt/swapfile
+          sudo swapon /mnt/swapfile
+          free -h
+
       - name: Install necessary packages
         run: |
           lsb_release -a
@@ -252,7 +260,7 @@ jobs:
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
           make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}  ${{ env.DEFCONFIG_NAME }}
-          make -j4 CC="clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}
+          make -j2 CC="clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}
 
       - name: Make Anykernel3 Flasher
         run: |
